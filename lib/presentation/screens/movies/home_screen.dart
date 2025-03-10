@@ -1,4 +1,4 @@
-import 'package:cinemapedia_app/presentation/providers/movies/movies_providers.dart';
+import 'package:cinemapedia_app/presentation/providers/providers.dart';
 import 'package:cinemapedia_app/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +10,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView(); // Renderiza la vista principal
+    return Scaffold(
+      body: _HomeView(),
+      bottomNavigationBar: CustomBottomNavigationBar(),
+    ); // Renderiza la vista principal
   }
 }
 
@@ -32,12 +35,24 @@ class _HomeViewState extends ConsumerState<_HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final nowPlayingMovies = ref.watch(
-      nowPlayingMoviesProvider,
+    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
+    final slideShowMovies = ref.watch(
+      moviesSlideShowProvider,
     ); // Escucha cambios en la lista de películas
 
     return Column(
-      children: [CustomAppBar(), MoviesSlideShow(movies: nowPlayingMovies)],
+      children: [
+        CustomAppBar(),
+        MoviesSlideShow(movies: slideShowMovies),
+        MoviesHorizontalListView(
+          movies: nowPlayingMovies,
+          title: 'En cines',
+          subTitle: 'Lunes 20',
+          loadNextPage: () {
+            ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+          },
+        ),
+      ],
     );
   }
 }
