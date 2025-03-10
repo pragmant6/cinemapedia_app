@@ -1,6 +1,7 @@
 import 'package:cinemapedia_app/config/constants/environment.dart';
-import 'package:cinemapedia_app/config/domain/entities/movie.dart';
-import 'package:cinemapedia_app/config/infrastructure/models/movie_db/movie_movie_db.dart';
+import 'package:cinemapedia_app/infrastructure/models/movie_db/movie_details.dart';
+import 'package:cinemapedia_app/infrastructure/models/movie_db/movie_movie_db.dart';
+import 'package:cinemapedia_app/domain/entities/movie.dart';
 
 class MovieMapper {
   static String getUrlPath(String url) {
@@ -27,6 +28,29 @@ class MovieMapper {
         (movieDB.posterPath.isNotEmpty)
             ? getUrlPath(movieDB.posterPath)
             : 'no-poster',
+    releaseDate: movieDB.releaseDate,
+    title: movieDB.title,
+    video: movieDB.video,
+    voteAverage: movieDB.voteAverage,
+    voteCount: movieDB.voteCount,
+  );
+
+  static Movie movieDetailsToEntity(MovieDetails movieDB) => Movie(
+    adult: movieDB.adult,
+    backdropPath:
+        (movieDB.backdropPath.isNotEmpty)
+            ? getUrlPath(movieDB.backdropPath)
+            : getBackgroundPath(),
+    genreIds: movieDB.genres.map((e) => e.name).toList(),
+    id: movieDB.id,
+    originalLanguage: movieDB.originalLanguage,
+    originalTitle: movieDB.originalTitle,
+    overview: movieDB.overview,
+    popularity: movieDB.popularity,
+    posterPath:
+        (movieDB.backdropPath.isNotEmpty)
+            ? getUrlPath(movieDB.backdropPath)
+            : getBackgroundPath(),
     releaseDate: movieDB.releaseDate,
     title: movieDB.title,
     video: movieDB.video,

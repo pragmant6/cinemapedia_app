@@ -1,9 +1,10 @@
-import 'package:cinemapedia_app/config/domain/data_sources/movies_data_source.dart';
-import 'package:cinemapedia_app/config/infrastructure/mappers/movie_mapper.dart';
-import 'package:cinemapedia_app/config/infrastructure/models/movie_db/movie_db_response.dart';
+import 'package:cinemapedia_app/infrastructure/mappers/movie_mapper.dart';
+import 'package:cinemapedia_app/infrastructure/models/movie_db/movie_db_response.dart';
+import 'package:cinemapedia_app/infrastructure/models/movie_db/movie_details.dart';
+import 'package:cinemapedia_app/domain/data_sources/movies_data_source.dart';
+import 'package:cinemapedia_app/domain/entities/movie.dart';
 import 'package:dio/dio.dart';
 import 'package:cinemapedia_app/config/constants/environment.dart';
-import 'package:cinemapedia_app/config/domain/entities/movie.dart';
 
 class TheMovieDbDataSource extends MoviesDataSource {
   final dio = Dio(
@@ -25,6 +26,15 @@ class TheMovieDbDataSource extends MoviesDataSource {
             .toList();
     return movies;
   }
+  // List<Movie> _jsonToMovie(Map<String, dynamic> json) {
+  //   final movieDBResponse = MovieDbResponse.fromJson(json);
+  //   final Movie movies =
+  //       movieDBResponse.results
+  //           .where((movie) => movie.posterPath != 'no-poster')
+  //           .map((movie) => MovieMapper.movieDBToEntity(movie));
+
+  //   return movies;
+  // }
 
   @override
   Future<List<Movie>> getNowPlaying({int page = 1}) async {
@@ -60,5 +70,17 @@ class TheMovieDbDataSource extends MoviesDataSource {
       queryParameters: {'page': page},
     );
     return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<Movie> getMovieById(String movieID) async {
+    final response = await dio.get('/movie/$movieID');
+    if (response.statusCode != 200) {
+      throw Exception('Movie with id: $movieID not found');
+    }
+
+    final movieDetails = MovieDetails.fromJson(response.data);
+    final Movie movie = MovieMapper.movieDetailsToEntity(movieDetails);
+    return movie;
   }
 }
