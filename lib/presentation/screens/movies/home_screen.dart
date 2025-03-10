@@ -1,4 +1,5 @@
 import 'package:cinemapedia_app/presentation/providers/movies/movies_providers.dart';
+import 'package:cinemapedia_app/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -35,18 +36,8 @@ class _HomeViewState extends ConsumerState<_HomeView> {
       nowPlayingMoviesProvider,
     ); // Escucha cambios en la lista de películas
 
-    return ListView.builder(
-      itemCount: nowPlayingMovies.length, // Número total de películas
-      itemBuilder: (context, index) {
-        final movie =
-            nowPlayingMovies[index]; // Obtiene la película en la posición actual
-
-        return _MovieCard(
-          title: movie.title, // Título de la película
-          categories: movie.genreIds, // Lista de géneros
-          posterUrl: movie.posterPath, // URL del póster
-        );
-      },
+    return Column(
+      children: [CustomAppBar(), MoviesSlideShow(movies: nowPlayingMovies)],
     );
   }
 }
