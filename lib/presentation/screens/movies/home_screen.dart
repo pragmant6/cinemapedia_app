@@ -1,4 +1,5 @@
 import 'package:cinemapedia_app/presentation/providers/providers.dart';
+import 'package:cinemapedia_app/presentation/widgets/shared/full_screen_loader.dart';
 import 'package:cinemapedia_app/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,10 +11,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: _HomeView(),
       bottomNavigationBar: CustomBottomNavigationBar(),
-    ); // Renderiza la vista principal
+    ); // Rendering la vista principal
   }
 }
 
@@ -30,110 +31,72 @@ class _HomeViewState extends ConsumerState<_HomeView> {
   void initState() {
     super.initState();
     // Cargar la primera página de películas en cartelera al iniciar
+
     ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+    ref.read(popularMoviesProvider.notifier).loadNextPage();
+    ref.read(upComingMoviesProvider.notifier).loadNextPage();
+    ref.read(toRatedMoviesProvider.notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
+    final initialLoading = ref.watch(initialLoadingProvider);
+    if (initialLoading) return const FullScreenLoader();
     final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
-    final slideShowMovies = ref.watch(
-      moviesSlideShowProvider,
-    ); // Escucha cambios en la lista de películas
+    final slideShowMovies = ref.watch(moviesSlideShowProvider);
+    final popularMovies = ref.watch(popularMoviesProvider);
+    final upComingMovies = ref.watch(upComingMoviesProvider);
+    final toRatedMovies = ref.watch(toRatedMoviesProvider);
 
-    return Column(
-      children: [
-        CustomAppBar(),
-        MoviesSlideShow(movies: slideShowMovies),
-        MoviesHorizontalListView(
-          movies: nowPlayingMovies,
-          title: 'En cines',
-          subTitle: 'Lunes 20',
-          loadNextPage: () {
-            ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
-          },
+    return CustomScrollView(
+      slivers: [
+        const SliverAppBar(
+          floating: true,
+          flexibleSpace: FlexibleSpaceBar(title: CustomAppBar()),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate((context, index) {
+            return Column(
+              children: [
+                MoviesSlideShow(movies: slideShowMovies),
+                MoviesHorizontalListView(
+                  movies: nowPlayingMovies,
+                  title: 'En cines',
+                  subTitle: 'Lunes 20',
+                  loadNextPage: () {
+                    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MoviesHorizontalListView(
+                  movies: upComingMovies,
+                  title: 'Próximamente',
+                  subTitle: 'En este mes',
+                  loadNextPage: () {
+                    ref.read(upComingMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MoviesHorizontalListView(
+                  movies: popularMovies,
+                  title: 'Populares',
+                  //subTitle: 'En este mes',
+                  loadNextPage: () {
+                    ref.read(popularMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                MoviesHorizontalListView(
+                  movies: toRatedMovies,
+                  title: 'Mejor calificadas',
+                  subTitle: 'Desde siempre',
+                  loadNextPage: () {
+                    ref.read(toRatedMoviesProvider.notifier).loadNextPage();
+                  },
+                ),
+                const SizedBox(height: 15),
+              ],
+            );
+          }, childCount: 1),
         ),
       ],
-    );
-  }
-}
-
-// Tarjeta para mostrar información de una película
-class _MovieCard extends StatelessWidget {
-  final String title;
-  final List<String> categories;
-  final String posterUrl;
-
-  const _MovieCard({
-    required this.title,
-    required this.categories,
-    required this.posterUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4, // Sombra del card
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ), // Bordes redondeados
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen de la película
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(12),
-            ), // Bordes redondeados solo arriba
-            child: Image.network(
-              posterUrl,
-              height: 200, // Altura fija
-              width: double.infinity, // Ocupar todo el ancho disponible
-              fit: BoxFit.cover, // Ajuste para cubrir el espacio
-              errorBuilder:
-                  (context, error, stackTrace) => const Icon(
-                    Icons.broken_image, // Ícono de imagen rota si no carga
-                    size: 100,
-                    color: Colors.grey,
-                  ),
-            ),
-          ),
-
-          // Título de la película
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ), // Estilo en negrita
-              maxLines: 2, // Máximo 2 líneas
-              overflow:
-                  TextOverflow
-                      .ellipsis, // Agrega "..." si el texto es muy largo
-            ),
-          ),
-
-          // Géneros de la película
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              categories.join(
-                ', ',
-              ), // Convierte la lista en un string separado por comas
-              style: const TextStyle(
-                color: Colors.green,
-              ), // Texto en color verde
-              maxLines: 1, // Máximo una línea
-              overflow:
-                  TextOverflow
-                      .ellipsis, // Agrega "..." si el texto es muy largo
-            ),
-          ),
-
-          const SizedBox(height: 8), // Espacio al final
-        ],
-      ),
     );
   }
 }

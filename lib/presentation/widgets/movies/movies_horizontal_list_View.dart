@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:cinemapedia_app/config/domain/entities/movie.dart';
 import 'package:cinemapedia_app/config/helpers/human_formats.dart';
-import 'package:flutter/material.dart';
 
 class MoviesHorizontalListView extends StatefulWidget {
   final List<Movie> movies;
@@ -26,7 +27,6 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
   final scrollController = ScrollController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     scrollController.addListener(() {
       if (widget.loadNextPage == null) return;
@@ -39,7 +39,6 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     scrollController.dispose();
     super.dispose();
   }
@@ -50,7 +49,7 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
       height: 350,
       child: Column(
         children: [
-          if (widget.title != null && widget.subTitle != null)
+          if (widget.title != null)
             _Title(title: widget.title, subTitle: widget.subTitle),
           Expanded(
             child: ListView.builder(
@@ -59,7 +58,7 @@ class _MoviesHorizontalListViewState extends State<MoviesHorizontalListView> {
               physics: const BouncingScrollPhysics(),
               itemCount: widget.movies.length,
               itemBuilder: (context, index) {
-                return _Slide(movie: widget.movies[index]);
+                return FadeInRight(child: _Slide(movie: widget.movies[index]));
               },
             ),
           ),
@@ -153,11 +152,11 @@ class _Title extends StatelessWidget {
         children: [
           if (title != null) Text(title!, style: titleStyle),
           const Spacer(),
-          if (title != null)
+          if (subTitle != null)
             FilledButton.tonal(
               onPressed: () {},
               style: ButtonStyle(visualDensity: VisualDensity.compact),
-              child: Text(title!),
+              child: Text(subTitle!),
             ),
         ],
       ),
