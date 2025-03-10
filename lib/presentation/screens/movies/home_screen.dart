@@ -2,16 +2,18 @@ import 'package:cinemapedia_app/presentation/providers/movies/movies_providers.d
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Pantalla principal de la aplicación
 class HomeScreen extends StatelessWidget {
-  static const name = 'home-screen';
+  static const name = 'home-screen'; // Nombre para la navegación
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return const _HomeView(); // Renderiza la vista principal
   }
 }
 
+// Widget que maneja el estado con Riverpod
 class _HomeView extends ConsumerStatefulWidget {
   const _HomeView();
 
@@ -22,29 +24,34 @@ class _HomeView extends ConsumerStatefulWidget {
 class _HomeViewState extends ConsumerState<_HomeView> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    // Cargar la primera página de películas en cartelera al iniciar
     ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
   }
 
   @override
   Widget build(BuildContext context) {
-    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
-    // TODO: implement build
+    final nowPlayingMovies = ref.watch(
+      nowPlayingMoviesProvider,
+    ); // Escucha cambios en la lista de películas
+
     return ListView.builder(
-      itemCount: nowPlayingMovies.length,
+      itemCount: nowPlayingMovies.length, // Número total de películas
       itemBuilder: (context, index) {
-        final movie = nowPlayingMovies[index];
+        final movie =
+            nowPlayingMovies[index]; // Obtiene la película en la posición actual
+
         return _MovieCard(
-          title: movie.title,
-          categories: movie.genreIds,
-          posterUrl: movie.posterPath,
+          title: movie.title, // Título de la película
+          categories: movie.genreIds, // Lista de géneros
+          posterUrl: movie.posterPath, // URL del póster
         );
       },
     );
   }
 }
 
+// Tarjeta para mostrar información de una película
 class _MovieCard extends StatelessWidget {
   final String title;
   final List<String> categories;
@@ -58,48 +65,67 @@ class _MovieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4, // Sombra del card
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ), // Bordes redondeados
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Imagen de la película
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(12),
+            ), // Bordes redondeados solo arriba
             child: Image.network(
               posterUrl,
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
+              height: 200, // Altura fija
+              width: double.infinity, // Ocupar todo el ancho disponible
+              fit: BoxFit.cover, // Ajuste para cubrir el espacio
               errorBuilder:
                   (context, error, stackTrace) => const Icon(
-                    Icons.broken_image,
+                    Icons.broken_image, // Ícono de imagen rota si no carga
                     size: 100,
                     color: Colors.grey,
                   ),
             ),
           ),
+
+          // Título de la película
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
               title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ), // Estilo en negrita
+              maxLines: 2, // Máximo 2 líneas
+              overflow:
+                  TextOverflow
+                      .ellipsis, // Agrega "..." si el texto es muy largo
             ),
           ),
 
+          // Géneros de la película
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text(
-              categories.join(', '),
-              style: TextStyle(color: Colors.green),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              categories.join(
+                ', ',
+              ), // Convierte la lista en un string separado por comas
+              style: const TextStyle(
+                color: Colors.green,
+              ), // Texto en color verde
+              maxLines: 1, // Máximo una línea
+              overflow:
+                  TextOverflow
+                      .ellipsis, // Agrega "..." si el texto es muy largo
             ),
           ),
-          const SizedBox(height: 8),
+
+          const SizedBox(height: 8), // Espacio al final
         ],
       ),
     );
