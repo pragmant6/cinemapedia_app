@@ -27,8 +27,9 @@ class MovieMapper {
     posterPath:
         (movieDB.posterPath.isNotEmpty)
             ? getUrlPath(movieDB.posterPath)
-            : 'no-poster',
-    releaseDate: movieDB.releaseDate,
+            : 'https://th.bing.com/th/id/OIP.Lr_j_PgqTGzKxJTeIwajVwHaLH?rs=1&pid=ImgDetMain',
+    releaseDate:
+        movieDB.releaseDate != null ? movieDB.releaseDate! : DateTime.now(),
     title: movieDB.title,
     video: movieDB.video,
     voteAverage: movieDB.voteAverage,
