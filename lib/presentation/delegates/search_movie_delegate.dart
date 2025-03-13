@@ -123,7 +123,7 @@ class _MovieItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
-    // TODO: implement build
+
     return GestureDetector(
       onTap: () {
         onMovieSelected(context, movie);
