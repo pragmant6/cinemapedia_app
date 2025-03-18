@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
-  const CustomBottomNavigationBar({super.key});
+class CustomBottomNavigation extends StatelessWidget {
+  const CustomBottomNavigation({super.key});
 
   int getCurrentIndex(BuildContext context) {
     final String location = GoRouterState.of(context).matchedLocation;
@@ -13,6 +13,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
       case '/categories':
         return 1;
+
       case '/favorites':
         return 2;
 
@@ -27,12 +28,11 @@ class CustomBottomNavigationBar extends StatelessWidget {
         context.go('/');
         break;
       case 1:
-        context.go('/');
+        context.go('/categories');
         break;
       case 2:
         context.go('/favorites');
         break;
-      default:
     }
   }
 
